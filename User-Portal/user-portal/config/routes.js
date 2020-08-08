@@ -19,7 +19,12 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': { view: 'pages/homepage' },
+ '/': { view: 'pages/homepage' },
+ 'GET /jobs/list': 'JobsController.list',
+ 'GET /jobs/job/:jobName': 'JobsController.parts',
+ 'POST /jobs/validate': 'JobsController.validate',
+ 'POST /jobs/search': 'SearchController.search',
+ 'POST /jobs/validateOrder': 'JobsController.validateOrder',
 
 
   /***************************************************************************
