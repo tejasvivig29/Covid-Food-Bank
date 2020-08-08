@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <%- include ('../templates/header') -%>
-</head>
+  </head>
 
-<body>
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
 
-<header>
-    <%- include ('../templates/nav') -%>
-</header>
+    <div class="container">
+      <h1 class="display-4">Order Search</h1>
 
-<div class="container">
-    <h1 class="display-4">Order Search</h1>
-
-    <nav class="navbar navbar-light bg-light">
-        <form class="form-inline" action="/order/search" method="POST" onsubmit="return $('#jobName').val().length > 0">
-            <input class="form-control mr-sm-2" type="text" id="jobName" name="jobName" placeholder="Enter Job Name..." aria-label="Search">
-            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+      <nav class="navbar navbar-light bg-light">
+        <form
+          class="form-inline"
+          action="/order/search"
+          method="POST"
+          onsubmit="return $('#jobName').val().length > 0"
+        >
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            id="jobName"
+            name="jobName"
+            placeholder="Enter Job Name..."
+            aria-label="Search"
+          />
+          <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">
+            Search
+          </button>
         </form>
-    </nav>
+      </nav>
+    </div>
 
-</div>
-
-<footer>
-    <%- include ('../templates/footer') -%>
-</footer>
-
-
-</body>
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include ('../templates/foot')
+      -%>
+    </footer>
+  </body>
 </html>

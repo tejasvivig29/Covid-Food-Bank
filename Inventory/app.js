@@ -23,7 +23,7 @@ app.get("/items", function (req, res, next) {
     )
     .then(function (apiData) {
       let items = JSON.parse(apiData.data);
-      res.render("pages/parts", { parts: items });
+      res.render("pages/parts", { items: items });
     })
     .catch(function (error) {
       console.log(error);

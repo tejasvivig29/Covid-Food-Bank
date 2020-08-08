@@ -1,44 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <%- include ('../templates/header') -%>
-</head>
+  </head>
 
-<body>
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
 
-<header>
-    <%- include ('../templates/nav') -%>
-</header>
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/parts">Parts</a></li>
+        <li class="breadcrumb-item active">Add</li>
+      </ol>
 
-<div class="container">
-<ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/parts">Parts</a></li>
-    <li class="breadcrumb-item active">Add</li>
-</ol>
-
-<h1 class="display-4">Add Part</h1>
-<form method="post" action="/parts/addpart">
-    <div class="form-group">
-        <label for="partId">Part ID</label>
-        <input type="number" name="partId" class="form-control">
+      <h1 class="display-4">Add Part</h1>
+      <form method="post" action="/parts/addpart">
+        <div class="form-group">
+          <label for="partId">Part ID</label>
+          <input type="number" name="partId" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="partName">Part Name</label>
+          <input type="text" name="partName" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="qoh">Quantity on Hands</label>
+          <input type="number" name="qoh" class="form-control" />
+        </div>
+        <input type="submit" value="Submit" class="btn btn-primary" />
+      </form>
     </div>
-    <div class="form-group">
-        <label for="partName">Part Name</label>
-        <input type="text" name="partName" class="form-control">
-    </div>
-    <div class="form-group">
-        <label for="qoh">Quantity on Hands</label>
-        <input type="number" name="qoh" class="form-control">
-    </div>
-    <input type="submit" value="Submit" class="btn btn-primary">
-</form>
 
-</div>
-
-<footer>
-    <%- include ('../templates/footer') -%>
-</footer>
-
-
-</body>
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include ('../templates/foot')
+      -%>
+    </footer>
+  </body>
 </html>

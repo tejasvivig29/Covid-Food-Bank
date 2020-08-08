@@ -1,45 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <%- include ('../templates/header') -%>
-</head>
+  </head>
 
-<body>
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
 
-<header>
-    <%- include ('../templates/nav') -%>
-</header>
+    <div class="container">
+      <h1 class="display-4">Orders</h1>
 
-<div class="container">
-    <h1 class="display-4">Orders</h1>
-
-<table class="table table-hover">
-    <thead>
-        <tr>
+      <table class="table table-hover">
+        <thead>
+          <tr>
             <th>Job Name</th>
-            <th>User ID </th>
+            <th>User ID</th>
             <th>Part ID</th>
             <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% for(let i = 0; i < orders.length; i++) { %>
-            <tr>
-                <td><%= orders[i].jobName %></td>
-                <td><%= orders[i].userId %></td>
-                <td><%= orders[i].partId %></td>
-                <td><%= orders[i].qty %></td>
-            </tr>
-        <% } %>
-    </tbody>
-</table>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i = 0; i < orders.length; i++) { %>
+          <tr>
+            <td><%= orders[i].jobName %></td>
+            <td><%= orders[i].userId %></td>
+            <td><%= orders[i].partId %></td>
+            <td><%= orders[i].qty %></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
 
-</div>
-
-<footer>
-    <%- include ('../templates/footer') -%>
-</footer>
-
-
-</body>
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include ('../templates/foot')
+      -%>
+    </footer>
+  </body>
 </html>
