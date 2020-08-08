@@ -153,14 +153,15 @@ app.get("/searchitem", (req, res) => {
 app.post("/order/search", (req, res) => {
   axios
     .get(
-      "https://3k0dt7hoaj.execute-api.us-east-1.amazonaws.com/Dev/getpartorders",
-      { params: { jobName: req.body.jobName } }
+      "https://2y44ir6zk8.execute-api.us-east-1.amazonaws.com/api/getorders",
+      { params: { orderId: req.body.orderId } }
     )
     .then(function (apiData) {
-      if (Object.entries(apiData.data.Items).length === 0) {
-        res.render("pages/message", { message: "Error: No such Job Exists" });
+      if (apiData.data === "[]") {
+        res.render("pages/message", { message: "Error: No such Order Exists" });
       } else {
-        res.render("pages/orders.ejs", { orders: apiData.data.Items });
+        let order = JSON.parse(apiData.data);
+        res.render("pages/orders.ejs", { orders: order });
       }
     })
     .catch(function (error) {
@@ -177,7 +178,7 @@ app.post("/item/search", (req, res) => {
 
     .then(function (apiData) {
       if (apiData.data === "[]") {
-        res.render("pages/message", { message: "Error: No such Job Exists" });
+        res.render("pages/message", { message: "Error: No such Item Exists" });
       } else {
         res.render("pages/items.ejs", { items: JSON.parse(apiData.data) });
       }

@@ -15,18 +15,20 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th>Job Name</th>
+            <th>Order ID</th>
+            <th>Package ID</th>
             <th>User ID</th>
-            <th>Part ID</th>
+            <th>Item ID</th>
             <th>Quantity</th>
           </tr>
         </thead>
         <tbody>
           <% for(let i = 0; i < orders.length; i++) { %>
           <tr>
-            <td><%= orders[i].jobName %></td>
+            <td><%= orders[i].orderId %></td>
+            <td><%= orders[i].packageId %></td>
             <td><%= orders[i].userId %></td>
-            <td><%= orders[i].partId %></td>
+            <td><%= orders[i].itemId %></td>
             <td><%= orders[i].qty %></td>
           </tr>
           <% } %>
