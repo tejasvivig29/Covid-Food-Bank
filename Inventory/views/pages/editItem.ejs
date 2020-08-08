@@ -11,38 +11,38 @@
 
     <div class="container">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/parts">Parts</a></li>
+        <li class="breadcrumb-item"><a href="/items">Items</a></li>
         <li class="breadcrumb-item active">Edit</li>
       </ol>
 
-      <h1 class="display-4">Edit Part</h1>
-      <form method="post" action="/parts/editpart">
+      <h1 class="display-4">Edit Item</h1>
+      <form method="post" action="/items/editItem">
         <div class="form-group">
-          <label for="partId">Part ID</label>
+          <label for="itemId">Item ID</label>
           <input
             type="number"
-            name="partId"
-            value="<%= part.partId %>"
+            name="itemId"
+            value="<%= item.item_id %>"
             class="form-control"
             readonly
           />
         </div>
         <div class="form-group">
-          <label for="partName">Part Name</label>
+          <label for="itemName">Item Name</label>
           <input
             type="text"
-            name="partName"
-            value="<%= part.partName %>"
+            name="itemName"
+            value="<%= item.item_name %>"
             class="form-control"
             readonly
           />
         </div>
         <div class="form-group">
-          <label for="qoh">Quantity on Hands</label>
+          <label for="quantity">Quantity on Hands</label>
           <input
             type="number"
-            name="qoh"
-            value="<%= part.qoh %>"
+            name="quantity"
+            value="<%= item.quantity %>"
             class="form-control"
           />
         </div>

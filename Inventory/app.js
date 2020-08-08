@@ -23,7 +23,7 @@ app.get("/items", function (req, res, next) {
     )
     .then(function (apiData) {
       let items = JSON.parse(apiData.data);
-      res.render("pages/parts", { items: items });
+      res.render("pages/items", { items: items });
     })
     .catch(function (error) {
       console.log(error);
@@ -55,35 +55,35 @@ app.get("/items/:itemId", function (req, res, next) {
     });
 });
 
-app.get("/addpart", function (req, res, next) {
-  res.render("pages/addpart");
+app.get("/addItem", function (req, res, next) {
+  res.render("pages/addItem");
 });
 
-app.get("/editpart/:partId", function (req, res, next) {
-  const partId = req.params.partId;
+app.get("/editItem/:itemId", function (req, res, next) {
+  const item_id = req.params.itemId;
   axios
     .get(
-      "https://zy9pj7prqf.execute-api.us-east-1.amazonaws.com/Dev/getspecificpartdetails",
-      { params: { partId: partId } }
+      "https://4e050dbh1j.execute-api.us-east-1.amazonaws.com/api541/getitembyid",
+      { params: { item_id } }
     )
     .then(function (apiData) {
-      if (Object.entries(apiData.data).length === 0) {
-        return res.render("pages/message", { message: "Invalid part ID" });
+      if (apiData.data === "[]") {
+        return res.render("pages/message", { message: "Invalid Item ID" });
       }
-      part = apiData.data.Item;
-      res.render("pages/editpart", { part: part });
+      item = JSON.parse(apiData.data);
+      res.render("pages/editItem", { item: item[0] });
     })
     .catch(function (error) {
       console.log(error);
     });
 });
 
-app.post("/parts/addpart", (req, res) => {
-  const partId = parseInt(req.body.partId);
-  const partName = req.body.partName;
-  const qoh = parseInt(req.body.qoh);
+app.post("/items/addItem", (req, res) => {
+  const item_id = parseInt(req.body.itemId);
+  const item_name = req.body.itemName;
+  const qty = parseInt(req.body.quantity);
 
-  if (qoh <= 0) {
+  if (qty <= 0) {
     return res.render("pages/message", {
       message: "Error: Quantity cannot be zero or negative",
     });
@@ -91,15 +91,15 @@ app.post("/parts/addpart", (req, res) => {
 
   axios
     .get(
-      "https://zy9pj7prqf.execute-api.us-east-1.amazonaws.com/Dev/getspecificpartdetails",
-      { params: { partId: partId } }
+      "https://4e050dbh1j.execute-api.us-east-1.amazonaws.com/api541/getitembyid",
+      { params: { item_id: item_id } }
     )
     .then(function (apiData) {
-      if (Object.entries(apiData.data).length === 0) {
+      if (apiData.data === "[]") {
         axios
           .post(
-            "https://msd18j9s0f.execute-api.us-east-1.amazonaws.com/Dev/savenewpartdetails",
-            { partId: partId, partName: partName, qoh: qoh }
+            "https://1sevtevxgh.execute-api.us-east-1.amazonaws.com/api/createitem",
+            { item_id: item_id, item_name: item_name, quantity: qty }
           )
           .then(function (apiData) {
             res.render("pages/message", { message: "Part Added Successfully" });
@@ -109,7 +109,7 @@ app.post("/parts/addpart", (req, res) => {
           });
       } else {
         res.render("pages/message", {
-          message: "Error: Part ID already exists. Try with a different one",
+          message: "Error: Item ID already exists. Try with a different one",
         });
       }
     })
@@ -118,12 +118,12 @@ app.post("/parts/addpart", (req, res) => {
     });
 });
 
-app.post("/parts/editpart", (req, res) => {
-  const partId = parseInt(req.body.partId);
-  const partName = req.body.partName;
-  const qoh = parseInt(req.body.qoh);
+app.post("/items/editItem", (req, res) => {
+  const item_id = parseInt(req.body.itemId);
+  const item_name = req.body.itemName;
+  const quantity = parseInt(req.body.quantity);
 
-  if (qoh <= 0) {
+  if (quantity <= 0) {
     return res.render("pages/message", {
       message: "Error: Quantity cannot be zero or negative",
     });
@@ -131,8 +131,8 @@ app.post("/parts/editpart", (req, res) => {
 
   axios
     .put(
-      "https://6mrwuwx6t1.execute-api.us-east-1.amazonaws.com/Dev/updatepartdetails",
-      { partId: partId, partName: partName, qoh: qoh }
+      "https://bojt5bx5j8.execute-api.us-east-1.amazonaws.com/api/updateitem",
+      { item_id, quantity }
     )
     .then(function (apiData) {
       res.render("pages/message", { message: "Part Edited Successfully" });
@@ -172,14 +172,14 @@ app.post("/item/search", (req, res) => {
   axios
     .get(
       "https://4e050dbh1j.execute-api.us-east-1.amazonaws.com/api541/getitembyid",
-      { params: { itemId: req.body.itemId } }
+      { params: { item_id: req.body.itemId } }
     )
 
     .then(function (apiData) {
-      if (Object.entries(apiData.data).length === 0) {
+      if (apiData.data === "[]") {
         res.render("pages/message", { message: "Error: No such Job Exists" });
       } else {
-        res.render("pages/parts.ejs", { items: apiData.data });
+        res.render("pages/items.ejs", { items: JSON.parse(apiData.data) });
       }
     })
     .catch(function (error) {
