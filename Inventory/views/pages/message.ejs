@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <%- include ('../templates/header') -%>
-</head>
+  </head>
 
-<body>
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
 
-<header>
-    <%- include ('../templates/nav') -%>
-</header>
+    <div class="container">
+      <ol class="breadcrumb">
+        <a href="/items"
+          ><li class="breadcrumb-item" style="cursor: pointer;">
+            ⇦ Go to Items
+          </li></a
+        >
+      </ol>
+      <h1 class="display-4"><%= message %></h1>
+    </div>
 
-<div class="container">
-    <ol class="breadcrumb">
-        <a href="/parts"><li class="breadcrumb-item" style="cursor: pointer;" >⇦ Go to Parts</li></a>
-    </ol>
-    <h1 class="display-4"><%= message %></h1>
-
-</div>
-
-<footer>
-    <%- include ('../templates/footer') -%>
-</footer>
-
-
-</body>
+    <footer>
+      <%- include ('../templates/footer') -%>
+    </footer>
+  </body>
 </html>

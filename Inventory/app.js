@@ -32,20 +32,23 @@ app.get("/items", function (req, res, next) {
 
 // get specific part details
 app.get("/items/:itemId", function (req, res, next) {
-  const partId = req.params.partId;
+  const itemId = req.params.itemId;
   axios
     .get(
-      "https://zy9pj7prqf.execute-api.us-east-1.amazonaws.com/Dev/getspecificpartdetails",
-      { params: { partId: partId } }
+      "https://4e050dbh1j.execute-api.us-east-1.amazonaws.com/api541/getitembyid",
+      { params: { item_id: itemId } }
     )
     .then(function (apiData) {
       if (Object.entries(apiData.data).length === 0) {
         return res.render("pages/message", {
-          message: "Error: Invalid part ID",
+          message: "Error: Invalid Item ID",
         });
       }
-      parts = [apiData.data.Item];
-      res.render("pages/parts", { parts: parts });
+      console.log(
+        "api data : " + apiData.data + "  data item " + apiData.data.Item
+      );
+      items = [apiData.data];
+      res.render("pages/parts", { items: JSON.parse(items) });
     })
     .catch(function (error) {
       console.log(error);
@@ -143,6 +146,10 @@ app.get("/searchorder", (req, res) => {
   res.render("pages/searchorder");
 });
 
+app.get("/searchitem", (req, res) => {
+  res.render("pages/searchitem");
+});
+
 app.post("/order/search", (req, res) => {
   axios
     .get(
@@ -154,6 +161,25 @@ app.post("/order/search", (req, res) => {
         res.render("pages/message", { message: "Error: No such Job Exists" });
       } else {
         res.render("pages/orders.ejs", { orders: apiData.data.Items });
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+});
+
+app.post("/item/search", (req, res) => {
+  axios
+    .get(
+      "https://4e050dbh1j.execute-api.us-east-1.amazonaws.com/api541/getitembyid",
+      { params: { itemId: req.body.itemId } }
+    )
+
+    .then(function (apiData) {
+      if (Object.entries(apiData.data).length === 0) {
+        res.render("pages/message", { message: "Error: No such Job Exists" });
+      } else {
+        res.render("pages/parts.ejs", { items: apiData.data });
       }
     })
     .catch(function (error) {

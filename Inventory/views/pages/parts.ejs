@@ -10,25 +10,27 @@
     </header>
 
     <div class="container">
-      <h1 class="display-4">Parts</h1>
+      <h1 class="display-4">Items</h1>
 
       <table class="table table-hover">
         <thead>
           <tr>
-            <th>Part ID</th>
-            <th>Part Name</th>
-            <th>Quantity on Hands</th>
+            <th>Item ID</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
             <td></td>
           </tr>
         </thead>
         <tbody>
-          <% for(let i = 0; i < parts.length; i++) { %>
+          <% for(let i = 0; i < items.length; i++) { %>
           <tr>
-            <td><%= parts[i].item_id %></td>
-            <td><%= parts[i].item_name %></td>
-            <td><%= parts[i].quantity %></td>
+            <td><%= items[i].item_id %></td>
+            <td><%= items[i].item_name %></td>
+            <td><%= items[i].quantity %></td>
             <td>
-              <a href="/editpart/<%= parts[i].partId %>" class="btn btn-primary"
+              <a
+                href="/editpart/<%= items[i].item_id %>"
+                class="btn btn-primary"
                 >Edit</a
               >
             </td>
