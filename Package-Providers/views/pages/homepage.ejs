@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+
+  <body>
+
+    <%- include ('../templates/nav') -%>
+
+    <div class="container">
+        <h1 class="display-4">Welcome to Package Providers<h1>
+            <form action="/viewData">
+              <button class="btn btn-light" >View Packages </button>
+            </form>
+            <form action="/addData">
+              <button class="btn btn-light">Add Package </button>
+            </form>
+            <form action="/searchJob">
+              <button class="btn btn-light">Search Packages</button>
+            </form>        
+    </div>  
+
+    <%- include ('../templates/footer') -%>
+  </body>
+</html>
