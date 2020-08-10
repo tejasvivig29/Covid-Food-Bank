@@ -11,7 +11,7 @@ module.exports = {
 
     updatedAt: false,
     createdAt: false,
-    jobName: {
+    packageId: {
       type: 'string', required: true
     },
     date: {

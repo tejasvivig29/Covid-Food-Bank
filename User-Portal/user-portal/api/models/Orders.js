@@ -11,13 +11,13 @@ module.exports = {
     updatedAt: false,
     createdAt: false,
 
-    jobName: {
+    packageId: {
       type: 'string', required: true
     },
     userId: {
       type: 'string', required: true
     },
-    partId: {
+    itemId: {
       type: 'number', required: true
     },
     qty: {
