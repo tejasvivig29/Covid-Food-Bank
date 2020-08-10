@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
+
+    <div class="container">
+      <h1 class="display-4">Items</h1>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Item ID</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i = 0; i < items.length; i++) { %>
+          <tr>
+            <td><%= items[i].item_id %></td>
+            <td><%= items[i].item_name %></td>
+            <td><%= items[i].quantity %></td>
+            <td>
+              <a
+                href="/editItem/<%= items[i].item_id %>"
+                class="btn btn-primary"
+                >Edit</a
+              >
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include ('../templates/foot')
+      -%>
+    </footer>
+  </body>
+</html>

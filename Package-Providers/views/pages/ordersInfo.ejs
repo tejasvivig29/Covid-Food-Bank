@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+  <body>
+    <%- include ('../templates/nav') -%>
+
+    <div class="container">
+        <style>
+            table, th, td {
+                padding: 10px;
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+        </style>
+        
+        <h1 class="display-4">Package Info</h1><br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Package Name </th>
+                    <th>item Name </th>
+                    <th>Quantity </th>
+                </tr>
+            </thead>
+            <tbody><%packages735.forEach(function(package){ %><tr>
+                <td><%= package.packageId%> </td>
+                <td><%= package.itemId%> </td>
+                <td><%= package.qty %> </td>
+                </tr><% }) %>
+            </tbody>
+        </table><br>
+
+        <form action="/">
+            <button class="btn btn-light">Home </button>
+        </form><br>
+        <form action="/searchJob">
+            <button class="btn btn-light">Search Packages</button>
+        </form>        
+
+    </div>  
+
+    <%- include ('../templates/footer') -%>
+  </body>
+</html>

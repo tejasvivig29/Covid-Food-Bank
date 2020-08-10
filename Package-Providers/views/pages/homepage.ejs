@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
+    <div class="container">
+      <div class="jumbotron" style="text-align: center; margin-top: 15%;">
+        <h1 class="display-4">COVID Package Providers</h1>
+        <p class="lead">
+          We are the Package Providers assissted by Covid inventory  to help people
+        </p>
+        <hr />
+        <hr />
+        <a href="/viewData" class="btn-lg btn-primary">View Packages</a>
+        <a href="/addData" class="btn-lg btn-primary">Add Package</a>
+        <a href="/searchPackages" class="btn-lg btn-primary">Search Packages</a>
+        <a href="/searchUserOrder" class="btn-lg btn-primary">Search User Order</a>
+        <!-- <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a> -->
+      </div>
+    </div>
+
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include
+      ('../templates/foot')-%>
+    </footer>
+  </body>
+</html>
