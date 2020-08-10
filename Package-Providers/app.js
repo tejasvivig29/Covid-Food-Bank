@@ -261,6 +261,34 @@ app.post('/searchOrders', function(req, res) {
         res.status(400).send('Error in searching for package');
     });
 });
+app.get('/searchUserOrder', function(req, res) {
+    res.render('pages/searchUserOrder');
+});
+app.post('/searchUserOrders', function(req, res) {
+    const packageId = req.body.packageId;
+    console.log("PackageId: "+packageId);
+
+    axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getordersbypackagename', {
+        params: {
+            packageId: packageId
+        }
+    })
+    .then(function(response) {
+        console.log(response);
+        let orders = JSON.parse(response.data);
+        //Check for empty object
+        if (orders.length === 0) {
+            return res.send(`No orders for given packageName:${packageId} found`);
+        } else {
+            console.log(orders);
+            return res.render('pages/userordersInfo', {orders: orders});
+        }
+    })
+    .catch(function(error) {
+        console.log(error);
+        res.status(400).send('Error in searching for order');
+    });
+});
 
 app.listen(3000, function () {
     console.log('Listening on port 3000');
