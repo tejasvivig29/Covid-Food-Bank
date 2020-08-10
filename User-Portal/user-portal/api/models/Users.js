@@ -20,5 +20,17 @@ module.exports = {
       required: true
     }
   },
+
+  customToJSON: function() {
+    return _.omit(this, ['password'])
+  },
+
+  beforeCreate: function (values, next) {
+    require('bcrypt').hash(values.password, 10, function passwordEncrypted(err, encryptedPassword) {
+      if(err) return next(err);
+      values.password = encryptedPassword;
+      next();
+    });
+  }
 };
 

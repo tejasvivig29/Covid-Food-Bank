@@ -6,23 +6,37 @@
  */
 
 const axios = require('axios');
+const bcrypt = require("bcrypt");
 
 module.exports = {
 
   login: async function (req, res) {
-    if(req.session.userId) return res.redirect('/pages/homepage');
-    var job = await Users.findOne({id:req.body.username, password:req.body.password}).intercept((err)=>{
-      err.message = 'Uh oh: '+err.message;
-      return res.status(400).send(err.message);
-    });
-    if(job === undefined){
-      res.status(404).send('Invalid Credentials');
-      // res.view('pages/order', {message: 'Invalid Credentials'});
-    }
-    else{
-      req.session.userId = req.body.username;
-      return res.status(200).send('Valid Credentials');
-    }
+
+    const saltRounds = 10;
+    const plainTextPassword = req.body.password;
+
+      var job = await Users.findOne({id:req.body.username}).intercept((err)=>{
+          err.message = 'Uh oh: '+err.message;
+          return res.status(400).send(err.message);
+        });
+        if(job === undefined){
+          res.status(404).send('Invalid Credentials');
+        }
+        else{
+          bcrypt
+            .compare(plainTextPassword, job.password)
+            .then(result => {
+              if (result == true){
+                req.session.userId = req.body.username;
+                return res.status(200).send('Valid Credentials');
+              }
+              else{
+                return res.status(404).send('Invalid Credentials');
+              }
+            })
+            .catch(err => console.error(err.message));
+
+        }
   },
 
   logout: async function (req, res) {
