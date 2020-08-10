@@ -13,7 +13,7 @@ app.get('/', function(req, res) {
     res.render('pages/homepage');
 });
 
-app.get('/API735/getJobs', function(req, res) {
+app.get('/API735/getPackages', function(req, res) {
     axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackages')
         .then(function (response) {
             //console.log(response);
@@ -36,164 +36,9 @@ app.get('/API735/getJobs', function(req, res) {
         });
 });
 
-app.get('/API735/getJobInfo/:jobid/:partid', function(req, res) {
-    let jobId = req.params.jobid;
-    let partId = parseInt(req.params.partid);
-    axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobInfo', {
-        params: {
-            jobId: jobId,
-            partId: partId
-        }
-    })
-    .then(function (response) {
-        console.log(response);
-        let job = response.data;
-        //Check for empty object
-        if (Object.keys(job).length === 0 && job.constructor === Object) {
-            res.status(404).send(`Job with given jobId:${jobId} and partId:${partId} not found...`);
-        } else {
-            res.send(job.Item);
-        }
-    })
-    .catch(function (error) {
-        console.log(error);
-        res.status(400).send('Error in fetching job and part');
-    });
-});
-
-app.get('/API735/getJobByJobName/:jobid', function(req, res) {
-    let jobId = req.params.jobid
-    axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobByJobName', {
-        params: {
-            jobId: jobId
-        }
-    })
-    .then(function (response) {
-        console.log(response);
-        if (response.data.Count > 0) {
-            res.send(response.data.Items);
-        }
-        else {
-            res.status(404).send(`Job with given jobId:${jobId} not found...`)
-        }
-    })
-    .catch(function (error) {
-        console.log(error);
-        res.status(400).send('Error in fetching job details');
-    });
-});
-
-app.post('/API735/createJob', function(req, res) {
-    if(req.body && req.body.jobId && req.body.partId && req.body.qty) {
-        const jobId = req.body.jobId;
-        const partId = parseInt(req.body.partId);
-        const qty = parseInt(req.body.qty);
-
-        axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobInfo', {
-            params: {
-                jobId: jobId,
-                partId: partId
-            }
-        })
-        .then(function(response) {
-            console.log(response);
-            let job = response.data;
-            //Check for empty object
-            if (Object.keys(job).length !== 0) {
-                return res.status(400).send(`Job with given jobId:${jobId} and partId:${partId} already exists`);
-            } else {
-
-                axios.get('https://zy9pj7prqf.execute-api.us-east-1.amazonaws.com/Dev/getspecificpartdetails', {
-                    params: {
-                        partId: partId
-                    }
-                })
-                .then(function(response) {
-                    let partDetail = response.data;
-
-                    if (Object.keys(partDetail).length === 0 && partDetail.constructor === Object) {
-                        return res.status(404).send(`Given partID:${partId} is not valid`);
-                    } else {
-                        axios.post('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/createJob', {
-                            jobId: jobId,
-                            partId: partId,
-                            qty: qty
-                        })
-                        .then(function(response) {
-                            console.log(response);
-                            if (response.data.hasOwnProperty('body')) {
-                                return res.send(`New job with jobId:${jobId} and partId:${partId} created successfully`);
-                            } else {
-                                return res.status(400).send(`Error in creating job`);
-                            }
-                        })
-                        .catch(function(error) {
-                            console.log(error);
-                            return res.status(400).send(`Error in creating job`);
-                        });
-                    }
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    return res.status(400).send('Error in fetching part details');
-                });
-            }
-        })
-        .catch(function(error) {
-            console.log(error);
-            res.status(400).send('Error in fetching job details');
-        });
-    }
-    else {
-        res.status(404).send(`Parameters missing in request body!`);
-    }
-});
-
-app.post('/API735/deleteJob', function(req, res) {
-    if (req.body && req.body.jobId && req.body.partId) {
-        const jobId = req.body.jobId;
-        const partId = parseInt(req.body.partId);
-
-        axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobInfo', {
-            params: {
-                jobId: jobId,
-                partId: partId
-            }
-        })
-        .then(function(response) {
-            let job = response.data;
-            if (Object.keys(job).length === 0 && job.constructor === Object) {
-                return res.status(404).send(`Job with given jobId:${jobId} and partId:${partId} does not exist!`);
-            } else {
-                axios.post('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/deleteJob', {
-                    jobId: jobId,
-                    partId: partId    
-                })
-                .then(function(response) {
-                    if (response.data.hasOwnProperty('body')) {
-                        return res.send(`Quantity with jobId:${jobId} and partId:${partId} deleted successfully!`);
-                    } else {
-                        return res.status(400).send(`Error in deleting job`);
-                    }
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    return res.status(400).send('Error in deleting job')
-                });
-            }
-        })
-        .catch(function (error) {
-            console.log(error);
-            return res.status(400).send('Error in fetching job and part');
-        });
-    } else {
-        res.status(400).send(`Parameters missing in request body!`);
-    }
-});
-
 app.post('/deleteData/:packageId/:itemId', function(req, res) {
     const packageId = req.params.packageId;
-    const itemId = parseInt(req.params.itemId);
+    const itemId = req.params.itemId;
 
     axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackageinfo', {
         params: {
@@ -211,7 +56,6 @@ app.post('/deleteData/:packageId/:itemId', function(req, res) {
                 itemId: itemId    
             })
             .then(function(response) {
-                console.log(response);
 
                 if (response) {
                     console.log("dfg");
@@ -232,55 +76,10 @@ app.post('/deleteData/:packageId/:itemId', function(req, res) {
     });
 });
 
-app.put('/API735/updateJob', function(req, res) {
-    if (req.body && req.body.jobId && req.body.partId && req.body.qty) {
-        const jobId = req.body.jobId;
-        const partId = parseInt(req.body.partId);
-        const qty = parseInt(req.body.qty);
 
-        axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobInfo', {
-            params: {
-                jobId: jobId,
-                partId: partId
-            }
-        })
-        .then(function (response) {
-            console.log(response);
-            let job = response.data;
-            //Check for empty object
-            if (Object.keys(job).length === 0 && job.constructor === Object) {
-                return res.status(404).send(`Job with given jobId:${jobId} and partId:${partId} does not exist`);
-            } else {
-                axios.put('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/updateJob', {
-                    jobId: jobId,
-                    partId: partId,
-                    qty: qty
-                })
-                .then(function(response) {
-                    if (response.data.hasOwnProperty('body')) {
-                        return res.send(`Quantity for jobId:${jobId} and partId:${partId} updated successfully!`);
-                    } else {
-                        return res.status(404).send(`Error in updating job`);
-                    }
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    return res.status(400).send('Error in updating job');
-                });
-            }
-        })
-        .catch(function (error) {
-            console.log(error);
-            res.status(400).send('Error in fetching job and part');
-        });
-    } else {
-        res.status(400).send(`Parameters missing in request body!`);
-    }
-});
-
-app.post('/editJob/:packageId/:itemId', function(req, res) {
+app.post('/editPackage/:packageId/:itemId', function(req, res) {
     const packageId = req.params.packageId;
-    const itemId = parseInt(req.params.itemId);
+    const itemId = req.params.itemId;
 
     axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackageinfo', {
         params: {
@@ -289,7 +88,6 @@ app.post('/editJob/:packageId/:itemId', function(req, res) {
         }
     })
     .then(function(response) {
-        console.log(response);
         let job = response.data;
         //Check for empty object
         if (Object.keys(job).length === 0 && job.constructor === Object) {
@@ -306,7 +104,7 @@ app.post('/editJob/:packageId/:itemId', function(req, res) {
 
 app.post('/updateData/:packageId/:itemId', function(req, res) {
     const packageId = req.params.packageId;
-    const itemId = parseInt(req.params.itemId);
+    const itemId = req.params.itemId;
     const qty=parseInt(req.body.qty);
 
     axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackageinfo', {
@@ -372,28 +170,26 @@ app.get('/addData', function(req, res) {
 
 app.post('/addData', function(req, res) {
     const packageId = req.body.packageId;
-    const itemId = parseInt(req.body.itemId);
+    const itemId = req.body.itemId;
     const qty = parseInt(req.body.qty);
 
     axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackageinfo', {
         params: {
-
             packageId: packageId,
             itemId: itemId
         }
     })
     .then(function(response) {
-       // console.log(response);
-        let job = JSON.parse(response.data);
-        console.log(job);
+        let package = JSON.parse(response.data);
+        console.log(package);
         //Check for empty object
-        if (Object.keys(job).length !== 0) {
+        if (package.length !== 0) {
             return res.status(400).send(`Package with given packageId:${packageId} and itemId:${itemId} already exists`);
         } else {
 
-            axios.get('https://4e050dbh1j.execute-api.us-east-1.amazonaws.com/api541/getitembyid', {
+            axios.get('https://ulg6sx1952.execute-api.us-east-1.amazonaws.com/api541/getitembyname', {
                 params: {
-                    item_id: itemId
+                    item_name: itemId
                 }
             })
             .then(function(response) {
@@ -401,7 +197,7 @@ app.post('/addData', function(req, res) {
                 console.log(itemDetail);
 
                 if (itemDetail.length === 0 ) {
-                    return res.status(404).send(`Given itemID:${itemId} is not valid`);
+                    return res.status(404).send(`Given item:${itemId} is not valid`);
                 } else {
                     axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/createpackage', {
                         packageId: packageId,
@@ -425,7 +221,7 @@ app.post('/addData', function(req, res) {
                 }
             })
             .catch(function(error) {
-                console.log(error);
+                // console.log(error);
                 return res.status(400).send('Error in fetching part details');
             });
         }
@@ -436,8 +232,8 @@ app.post('/addData', function(req, res) {
     });
 });
 
-app.get('/searchJob', function(req, res) {
-    res.render('pages/searchJob');
+app.get('/searchPackages', function(req, res) {
+    res.render('pages/searchPackages');
 });
 
 app.post('/searchOrders', function(req, res) {
@@ -450,6 +246,7 @@ app.post('/searchOrders', function(req, res) {
         }
     })
     .then(function(response) {
+        console.log(response);
         let orders = JSON.parse(response.data);
         //Check for empty object
         if (orders.Count === 0) {

@@ -20,7 +20,7 @@
             <thead>
                 <tr>
                     <th>Package Name </th>
-                    <th>Item ID </th>
+                    <th>Item Name </th>
                     <th>Quantity </th>
                     <th>Actions</th>
                     <th>Actions</th>
@@ -32,7 +32,7 @@
                     <td><%= package.itemId %> </td>
                     <td><%= package.qty %> </td>
                     <td>
-                        <form class="d-inline" action="/editJob/<%=package.packageId%>/<%=package.itemId%>" method="POST">
+                        <form class="d-inline" action="/editPackage/<%=package.packageId%>/<%=package.itemId%>" method="POST">
                             <input type="submit" value="Update" class="btn btn-primary" />
                         </form>
                     </td>
