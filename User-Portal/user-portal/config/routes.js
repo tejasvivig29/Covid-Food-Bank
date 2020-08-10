@@ -21,15 +21,15 @@ module.exports.routes = {
 
  '/': { view: 'pages/launchpage', locals: { layout: false } },
  '/login': { view: 'pages/login', locals: { layout: false } },
- 'POST /jobs/homepage': 'JobsController.homepage',
- 'GET /jobs/homepage': 'JobsController.homepage',
- 'GET /jobs/logout': 'JobsController.logout',
- 'POST /jobs/login': 'JobsController.login',
- 'GET /jobs/list': 'JobsController.list',
- 'GET /jobs/job/:jobName': 'JobsController.parts',
- 'POST /jobs/validate': 'JobsController.validate',
+ 'POST /jobs/homepage': 'MasterController.homepage',
+ 'GET /jobs/homepage': 'MasterController.homepage',
+ 'GET /jobs/logout': 'MasterController.logout',
+ 'POST /jobs/login': 'MasterController.login',
+ 'GET /jobs/list': 'MasterController.list',
+ 'GET /jobs/job/:jobName': 'MasterController.parts',
+ 'POST /jobs/validate': 'MasterController.validate',
  'POST /jobs/search': 'SearchController.search',
- 'POST /jobs/validateOrder': 'JobsController.validateOrder',
+ 'POST /jobs/validateOrder': 'MasterController.validateOrder',
 
 
   /***************************************************************************

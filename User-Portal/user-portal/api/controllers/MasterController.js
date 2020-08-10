@@ -1,11 +1,12 @@
 /**
- * JobsController
+ * MasterController
  *
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
 const axios = require('axios');
+const Orders = require('../models/Orders');
 
 module.exports = {
 
@@ -150,7 +151,7 @@ module.exports = {
     let postData = JSON.parse(req.body.parts);
     let partOrders = [];
 
-    let existingOrders = await Jobparts.find({
+    let existingOrders = await Orders.find({
       jobName: postData.jobName,
       userId: username,
       result: true
@@ -182,7 +183,7 @@ module.exports = {
       });
     });
 
-    let orders = await Jobparts.createEach(partOrders).fetch().intercept((err) => {
+    let orders = await Orders.createEach(partOrders).fetch().intercept((err) => {
       err.message = 'Uh oh: '+err.message;
       return res.status(400).send(err.message);
     });
