@@ -6,7 +6,6 @@
  */
 
 const axios = require('axios');
-const Orders = require('../models/Orders');
 
 module.exports = {
 
@@ -39,21 +38,21 @@ module.exports = {
 
   list: function(req, res) {
     if(!req.session.userId) return res.redirect('/login');
-    axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobs')
+    axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getdistinctpackages')
     .then(response => {
       // console.log(response);
-      let allJobs = response.data.Items;
-      let jobsArr = [];
-      allJobs = allJobs.filter(job => {
-          if (jobsArr.includes(job.jobId)) {
-              return false;
-          } else {
-              jobsArr.push(job.jobId);
-              return true;
-          }
-      });
+      let allPackages = JSON.parse(response.data);
+      // let jobsArr = [];
+      // allPackages = allPackages.filter(job => {
+      //     if (jobsArr.includes(job.jobId)) {
+      //         return false;
+      //     } else {
+      //         jobsArr.push(job.jobId);
+      //         return true;
+      //     }
+      // });
       // console.log(allJobs);
-      res.view('pages/list', {jobs: allJobs});
+      res.view('pages/list', {packages: allPackages});
     })
     .catch(error => {
       console.log(error);
@@ -62,53 +61,46 @@ module.exports = {
         message: 'Error in fetching jobs'
       });
     });
-    // let data = [{'id':'job383','partId':383,'qty':33},
-    //   {'id':'job383','partId':384,'qty':35},
-    //   {'id':'job541','partId':541,'qty':55},
-    //   {'id':'job691','partId':691,'qty':66},
-    //   {'id':'job705','partId':705,'qty':78},
-    //   {'id':'job735','partId':735,'qty':77},
-    //   {'id':'job930','partId':930,'qty':99}];
-    // res.view('pages/list', {jobs: data});
   },
 
   parts: function(req, res) {
     if(!req.session.userId) return res.redirect('/login');
-    let jobName = req.params.jobName;
+    let packageName = req.params.jobName;
 
-    axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobByJobName', {
+    axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackagebypackagename', {
         params: {
-            jobId: jobName
+            packageId: packageName
         }
     })
     .then(response => {
-      if (response.data.Count == 0) {
-        return res.status(404).send(`Job with given jobId:${jobId} not found...`)
+      itemDetails = JSON.parse(response.data);
+      if (itemDetails.length === 0) {
+        return res.status(404).send(`Package with given name:${packageId} not found...`)
       }
       else {
-        let partIds = [];
-        console.log(response.data);
-        response.data.Items.forEach(part => {
-          partIds.push(parseInt(part.partId));
-        });
+        // let partIds = [];
+        // console.log(response.data);
+        // response.data.Items.forEach(part => {
+        //   partIds.push(parseInt(part.partId));
+        // });
 
-        let parts = {partId: partIds};
-        console.log(parts);
-        let jobDetails = response.data.Items;
+        // let parts = {partId: partIds};
+        // console.log(parts);
+        // let jobDetails = response.data.Items;
 
-        axios.post('https://5fhqcifq9d.execute-api.us-east-1.amazonaws.com/Dev/getspecificpartdetailsforjob', parts)
-          .then(response => {
-            console.log(response.data);
-            let partDetails = response.data;
-            res.view('pages/parts', {parts: partDetails, jobDetails: jobDetails, jobName: jobName});
-          })
-          .catch(error => {
-            console.log(error);
-            res.view('pages/order', {
-              result: 'failure',
-              message: 'Error in fetching parts'
-            });
-          });
+        // axios.post('https://5fhqcifq9d.execute-api.us-east-1.amazonaws.com/Dev/getspecificpartdetailsforjob', parts)
+        //   .then(response => {
+        //     console.log(response.data);
+        //     let partDetails = response.data;
+            res.view('pages/parts', {items: itemDetails, packageId: packageName});
+          // })
+          // .catch(error => {
+          //   console.log(error);
+          //   res.view('pages/order', {
+          //     result: 'failure',
+          //     message: 'Error in fetching parts'
+          //   });
+          // });
       }
     })
     .catch(error => {
@@ -118,15 +110,6 @@ module.exports = {
         message: 'Error in fetching job details'
       });
     });
- 
-    // let parts = {"partId": [383, 384]};
-
-    // let jobDetails = [{"id":"job383","partId":383,"qty":33},
-    //   {"id":"job383","partId":384,"qty":35}];
-    // let partDetails = [{"partId":383,"partName":"mouse","qoh":38},
-    //   {"partId":384,"partName":"printer","qoh":40}];
-
-    // res.view('pages/parts', {parts: partDetails, jobDetails: jobDetails, jobName: jobName});
   },
 
   validate: async function (req, res) {
@@ -147,12 +130,13 @@ module.exports = {
   validateOrder: async function (req, res) {
     if(!req.session.userId) return res.redirect('/login');
     console.log(req.body);
-    let username = req.body.username;
+    let username = req.session.userId;
     let postData = JSON.parse(req.body.parts);
     let partOrders = [];
+    let itemOrders = [];
 
     let existingOrders = await Orders.find({
-      jobName: postData.jobName,
+      packageId: postData.packageId,
       userId: username,
       result: true
     }).intercept((err) => {
@@ -161,16 +145,60 @@ module.exports = {
     });
     console.log(existingOrders);
     if (existingOrders.length > 0) {
-        // return res.status(400).send("Due to high demand, we are only allowing ordering of one job per user.");
         return res.view('pages/order', {
           result: 'failure',
-          message: 'Due to high demand, we are allowing ordering of only one job per user'
+          message: 'Sorry, we are allowing ordering of only one package per user'
         });
     }
     
-    let orderSuccess = postData.tableData.every(element => parseInt(element.qoh) >= parseInt(element.qty));
+    postData.tableData.forEach(element => {
+      itemOrders.push({
+        packageName: postData.packageId,
+        userId: username,
+        itemId: element.itemId,
+        qty: parseInt(element.qty),
+      });
+    });
 
-    let datetime = new Date().toISOString();
+    let trxnDetail = {
+      xaid: 1,
+      orders: itemOrders
+    };
+
+    axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/createorder', trxnDetail)
+    .then(response => {
+        console.log("=================Company X success begin===================");
+        // console.log(response);
+
+        if(response.status === 200 && response.data === "Success") {
+          console.log("yes, its successful!");
+
+          axios.post('https://zl1tn7nsl8.execute-api.us-east-1.amazonaws.com/api541/updateorders', trxnDetail)
+          .then(response => {
+            console.log("=================Company Y success begin===================");
+            console.log(response);
+            console.log("=================Company Y success end===================");
+          })
+          .catch(error => {
+            console.log("=================Company Y failed begin===================");
+            console.log(error);
+            console.log("=================Company Y failed end===================");
+          });
+        }
+
+        
+        console.log("=================Company X success end===================");
+    })
+    .catch(error => {
+        console.log("=================Company X failed begin===================");
+        console.log(error);
+        console.log("=================Company X failed end===================");
+    });
+    res.send("Hello");
+
+    //let orderSuccess = postData.tableData.every(element => parseInt(element.qoh) >= parseInt(element.qty));
+
+    /*let datetime = new Date().toISOString();
     postData.tableData.forEach(element => {
       partOrders.push({
         jobName: postData.jobName,
@@ -230,6 +258,6 @@ module.exports = {
         message: 'Sorry, order could not be placed due to unavailability of parts :('
       });
       // res.status(400).send("Sorry, order could not be placed due to unavailability of parts");
-    }
+    }*/
   }
 };
