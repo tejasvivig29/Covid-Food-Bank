@@ -19,7 +19,12 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
- '/': { view: 'pages/homepage' },
+ '/': { view: 'pages/launchpage', locals: { layout: false } },
+ '/login': { view: 'pages/login', locals: { layout: false } },
+ 'POST /jobs/homepage': 'JobsController.homepage',
+ 'GET /jobs/homepage': 'JobsController.homepage',
+ 'GET /jobs/logout': 'JobsController.logout',
+ 'POST /jobs/login': 'JobsController.login',
  'GET /jobs/list': 'JobsController.list',
  'GET /jobs/job/:jobName': 'JobsController.parts',
  'POST /jobs/validate': 'JobsController.validate',

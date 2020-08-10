@@ -9,7 +9,35 @@ const axios = require('axios');
 
 module.exports = {
 
+  login: async function (req, res) {
+    if(req.session.userId) return res.redirect('/pages/homepage');
+    var job = await Users.findOne({id:req.body.username, password:req.body.password}).intercept((err)=>{
+      err.message = 'Uh oh: '+err.message;
+      return res.status(400).send(err.message);
+    });
+    if(job === undefined){
+      res.status(404).send('Invalid Credentials');
+      // res.view('pages/order', {message: 'Invalid Credentials'});
+    }
+    else{
+      req.session.userId = req.body.username;
+      return res.status(200).send('Valid Credentials');
+    }
+  },
+
+  logout: async function (req, res) {
+    if(!req.session.userId) return res.redirect('/');
+    req.session.userId = null;
+    return res.redirect('/');
+  },
+
+  homepage: async function (req, res) {
+    if(!req.session.userId) return res.redirect('/login');
+    return res.view('pages/homepage');
+  },
+
   list: function(req, res) {
+    if(!req.session.userId) return res.redirect('/login');
     axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobs')
     .then(response => {
       // console.log(response);
@@ -44,6 +72,7 @@ module.exports = {
   },
 
   parts: function(req, res) {
+    if(!req.session.userId) return res.redirect('/login');
     let jobName = req.params.jobName;
 
     axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobByJobName', {
@@ -115,6 +144,7 @@ module.exports = {
   },
 
   validateOrder: async function (req, res) {
+    if(!req.session.userId) return res.redirect('/login');
     console.log(req.body);
     let username = req.body.username;
     let postData = JSON.parse(req.body.parts);
