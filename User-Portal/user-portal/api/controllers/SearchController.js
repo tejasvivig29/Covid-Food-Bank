@@ -9,28 +9,28 @@ const axios = require('axios');
 
 module.exports = {
   search: async function (req, res) {
-    var job = req.body.jobName;
+    var packageName = req.body.jobName;
+    console.log("pacjage name:"+packageName)
     let datetime = new Date().toISOString();
-    axios.get('https://eg1mx8iu96.execute-api.us-east-1.amazonaws.com/Dev/getJobByJobName', {
+    axios.get('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/getpackagebypackagename', {
         params: {
-            jobId: job
+          packageId: packageName
         }
     })
     .then(response => {
-      console.log(response.data);
-      if (response.data.Count === 0) {
-        return res.view('pages/order', {
+      itemDetails = JSON.parse(response.data);
+      if (itemDetails.length === 0) {
+          return res.view('pages/order', {
           result: 'failure',
-          message: 'No such job exists'
+          message: 'No such package exists'
         });
       }
       else {
-        Search.create({jobName: job, date: datetime.slice(0,10), time: datetime.slice(11, 19)}).exec((err) => {
+        Search.create({packageId: packageName, date: datetime.slice(0,10), time: datetime.slice(11, 19)}).exec((err) => {
           if (err) {
             res.status(500).send("Database Error");
           }
-          //res.status(200).send('Job Found: Entry added');
-          res.redirect('/jobs/job/' + job);
+          res.view('pages/parts', {items: itemDetails, packageId: packageName});
         });
       }
     })

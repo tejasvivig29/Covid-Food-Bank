@@ -77,6 +77,18 @@ module.exports = {
     });
   },
 
+  myorders: async function(req, res) {
+    if(!req.session.userId) return res.redirect('/login');
+    let myorders = await Orders.find({
+      userId: req.session.userId,
+      result: true
+    }).intercept((err) => {
+      err.message = 'Uh oh: '+err.message;
+      return res.status(400).send(err.message);
+    });
+    return res.view('pages/myorders', {orders: myorders});
+  },
+
   parts: function(req, res) {
     if(!req.session.userId) return res.redirect('/login');
     let packageName = req.params.jobName;

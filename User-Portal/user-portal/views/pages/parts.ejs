@@ -14,7 +14,7 @@
         tableData.shift();
         //console.log(tableData);
 
-        let dataToPass = {packageName: $('#package-name').text(), tableData: tableData};
+        let dataToPass = {packageId: $('#package-name').text(), tableData: tableData};
         console.log(dataToPass);
         $('#table-data').val(JSON.stringify(dataToPass));
     }

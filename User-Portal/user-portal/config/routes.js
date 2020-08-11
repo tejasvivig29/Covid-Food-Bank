@@ -26,6 +26,7 @@ module.exports.routes = {
  'GET /jobs/logout': 'MasterController.logout',
  'POST /jobs/login': 'MasterController.login',
  'GET /jobs/list': 'MasterController.list',
+ 'GET /jobs/myorders': 'MasterController.myorders',
  'GET /jobs/job/:jobName': 'MasterController.parts',
  'POST /jobs/validate': 'MasterController.validate',
  'POST /jobs/search': 'SearchController.search',

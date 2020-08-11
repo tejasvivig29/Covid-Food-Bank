@@ -18,7 +18,7 @@ module.exports = {
       type: 'string', required: true
     },
     itemId: {
-      type: 'number', required: true
+      type: 'string', required: true
     },
     qty: {
       type: 'number', required: true,
