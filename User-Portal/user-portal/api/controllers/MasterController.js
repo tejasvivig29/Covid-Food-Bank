@@ -158,7 +158,7 @@ module.exports = {
     console.log(req.body);
     let username = req.session.userId;
     let postData = JSON.parse(req.body.parts);
-    let itemOrders = [];
+    let itemOrders = [], orderSuccess = false;
     let itemOrdersX = [], itemOrdersY = [];
 
     let existingOrders = await Orders.find({
@@ -179,13 +179,13 @@ module.exports = {
     
     postData.tableData.forEach(element => {
       itemOrdersX.push({
-        packageName: postData.packageId,
+        packageId: postData.packageId,
         userId: username,
         itemId: element.itemId,
         qty: parseInt(element.qty),
       });
       itemOrdersY.push({
-        packageName: postData.packageId,
+        packageId: postData.packageId,
         userId: username,
         itemId: element.itemId,
         qty: element.qty,
@@ -229,30 +229,38 @@ module.exports = {
                                 if(response.data == 0) {
                                     console.log("Y successful with phase 2");
                                     
-                                    //write to our db
-                                    let datetime = new Date().toISOString();
-                                    postData.tableData.forEach(element => {
-                                      partOrders.push({
-                                        packageName: postData.packageId,
-                                        userId: username,
-                                        itemId: element.partId,
-                                        qty: parseInt(element.qty),
-                                        date: datetime.slice(0,10),
-                                        time: datetime.slice(11,19),
-                                        result: true
+                                    new Promise(async function(resolve, reject) {
+                                      //write to our db
+                                      let datetime = new Date().toISOString();
+                                      postData.tableData.forEach(element => {
+                                        itemOrders.push({
+                                          packageId: postData.packageId,
+                                          userId: username,
+                                          itemId: element.itemId,
+                                          qty: parseInt(element.qty),
+                                          date: datetime.slice(0,10),
+                                          time: datetime.slice(11,19),
+                                          result: true
+                                        });
+                                      });
+                                      console.log("Item Orders: ");
+                                      console.log(itemOrders);
+                                      let orders = await Orders.createEach(itemOrders).fetch().intercept((err) => {
+                                        err.message = 'Uh oh: '+err.message;
+                                        console.log("Error in pushing data to Orders table:" + err.message);
+                                        return res.status(400).send(err.message);
+                                      });
+                                      resolve();
+                                    })
+                                    .then( result => {
+                                      //console.log("order rows pushed: " + orders.length);
+
+                                      res.view('pages/order', {
+                                        result: 'success',
+                                        message: 'Order Placed Successfully!'
                                       });
                                     });
-                                    let orders = Orders.createEach(partOrders).fetch().intercept((err) => {
-                                      err.message = 'Uh oh: '+err.message;
-                                      return res.status(400).send(err.message);
-                                    });
-
-                                    console.log("order rows pushed: " + orders.length);
-
-                                    return res.view('pages/order', {
-                                      result: 'success',
-                                      message: 'Order Placed Successfully!'
-                                    });
+                                    //orderSuccess = true;
                                 }
                                 else {
                                     // Y failed with phase 2
@@ -307,6 +315,30 @@ module.exports = {
                     });
                 }
 
+                else {
+                    console.log("Y failed during phase 1");
+                    axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/commitorder', phase2failureX)
+                    .then(response => {
+                        console.log("X rollback successful");
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+                    axios.post('https://35dz539u31.execute-api.us-east-1.amazonaws.com/api541/commitorders', phase2failureY)
+                    .then(response => {
+                        console.log("Y rollback successful");
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+                    return res.view('pages/order', {
+                      result: 'failure',
+                      message: 'An error occurred while sending order details to Inventory management company'
+                    });
+                }
+
             })
             .catch(error => {
                 console.log(error);
@@ -336,10 +368,89 @@ module.exports = {
         });
     });
 
-    res.view('pages/order', {
-      result: 'failure',
-      message: 'An error has occurred'
-    });
+    // res.view('pages/order', {
+    //   result: 'failure',
+    //   message: 'An error has occurred finally'
+    // });
+    /*promise.then(result => {
+      if (orderSuccess === true) {
+        //write to our db
+        let datetime = new Date().toISOString();
+        postData.tableData.forEach(element => {
+          itemOrders.push({
+            packageId: postData.packageId,
+            userId: username,
+            itemId: element.itemId,
+            qty: parseInt(element.qty),
+            date: datetime.slice(0,10),
+            time: datetime.slice(11,19),
+            result: true
+          });
+        });
+        console.log("Item Orders: ");
+        console.log(itemOrders);
+        let orders = await Orders.createEach(itemOrders).fetch().intercept((err) => {
+          err.message = 'Uh oh: '+err.message;
+          console.log("Error in pushing data to Orders table:" + err.message);
+          return res.status(400).send(err.message);
+        });
+
+        console.log("order rows pushed: " + orders.length);
+
+        res.view('pages/order', {
+          result: 'success',
+          message: 'Order Placed Successfully!'
+        });
+
+    } else {
+      res.view('pages/order', {
+        result: 'failure',
+        message: 'An error has occurred'
+      });
+    }
+    })*/
+    /*
+    console.log("Oredrsucess: " + orderSuccess);
+    if (orderSuccess === true) {
+        //write to our db
+        let datetime = new Date().toISOString();
+        postData.tableData.forEach(element => {
+          itemOrders.push({
+            packageId: postData.packageId,
+            userId: username,
+            itemId: element.itemId,
+            qty: parseInt(element.qty),
+            date: datetime.slice(0,10),
+            time: datetime.slice(11,19),
+            result: true
+          });
+        });
+        console.log("Item Orders: ");
+        console.log(itemOrders);
+        let orders = await Orders.createEach(itemOrders).fetch().intercept((err) => {
+          err.message = 'Uh oh: '+err.message;
+          console.log("Error in pushing data to Orders table:" + err.message);
+          return res.status(400).send(err.message);
+        });
+
+        console.log("order rows pushed: " + orders.length);
+
+        res.view('pages/order', {
+          result: 'success',
+          message: 'Order Placed Successfully!'
+        });
+
+    } else {
+      res.view('pages/order', {
+        result: 'failure',
+        message: 'An error has occurred'
+      });
+    }*/
+
+    // res.view('pages/order', {
+    //   result: 'failure',
+    //   message: 'An error has occurred'
+    // });
     // res.send("Hello");
 
     // axios.post('https://35dz539u31.execute-api.us-east-1.amazonaws.com/api541/commitorders', phase2successY)
