@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sails.js Assignment 7</title>
+    <title>COVID AID</title>
 
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -17,7 +17,35 @@
 
   <body>
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#about">COVID AID PACKAGES</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/jobs/homepage">Home
+                    <span class="sr-only">(current)</span>
+                  </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/jobs/list">Packages</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/jobs/myorders">My Orders</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/jobs/logout">Log Out</a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
       <a class="navbar-brand" href="/">Company Z</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -32,9 +60,9 @@
           </li>
         </ul>
       </div>
-    </nav>
+    </nav> -->
 
-    <div class="container">
+    <div class="container" style="margin-top: 80px;">
       <%- body %>
     </div>  
 

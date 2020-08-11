@@ -1,0 +1,23 @@
+<h1 class="display-4" >Orders</h1>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Package</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for(let i = 0; i < orders.length; i++) { %>
+            <tr>
+                <td><%= orders[i].packageId %></td>
+                <td><%= orders[i].itemId %></td>
+                <td><%= orders[i].qty %></td>
+                <td><%= orders[i].date %></td>
+                <td><%= orders[i].time %></td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

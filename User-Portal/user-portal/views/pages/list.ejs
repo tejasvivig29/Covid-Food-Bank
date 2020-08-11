@@ -1,4 +1,4 @@
-<h1 class="display-4">Jobs</h1>
+<h1 class="display-4">Packages</h1>
 
 <nav class="navbar navbar-light bg-light">
     <form class="form-inline" action="/jobs/search" method="POST" onsubmit="return $('#jobName').val().length > 0">
@@ -7,9 +7,9 @@
     </form>
 </nav>
 <div class="list-group">
-    <% jobs.forEach(function(job){ %>
-        <a href="/jobs/job/<%= job.jobId %>" class="list-group-item list-group-item-action">
-            <%= job.jobId %>
+    <% packages.forEach(function(package){ %>
+        <a href="/jobs/job/<%= package.packageId %>" class="list-group-item list-group-item-action">
+            <%= package.packageId %>
         </a>
     <% }) %>
 </div>
