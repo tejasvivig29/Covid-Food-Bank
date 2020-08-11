@@ -146,8 +146,8 @@ module.exports = {
     console.log(req.body);
     let username = req.session.userId;
     let postData = JSON.parse(req.body.parts);
-    let partOrders = [];
     let itemOrders = [];
+    let itemOrdersX = [], itemOrdersY = [];
 
     let existingOrders = await Orders.find({
       packageId: postData.packageId,
@@ -166,49 +166,177 @@ module.exports = {
     }
     
     postData.tableData.forEach(element => {
-      itemOrders.push({
+      itemOrdersX.push({
         packageName: postData.packageId,
         userId: username,
         itemId: element.itemId,
         qty: parseInt(element.qty),
       });
+      itemOrdersY.push({
+        packageName: postData.packageId,
+        userId: username,
+        itemId: element.itemId,
+        qty: element.qty,
+      });
     });
 
-    let trxnDetail = {
+    let trxnDetailX = {
       xaid: 1,
-      orders: itemOrders
+      orders: itemOrdersX
     };
+    console.log("Order sent to X: ");
+    console.log(trxnDetailX);
+    let trxnDetailY = {
+      xaid: "1",
+      orders: itemOrdersY
+    };
+    console.log("Order sent to Y: ");
+    console.log(trxnDetailY);
 
-    axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/createorder', trxnDetail)
+    let phase2successX = { xaid: 1, status: "true" }, phase2failureX = { xaid: 1, status: "false" };
+    let phase2successY = { xaid: "1", status: "True" }, phase2failureY = { xaid: "1", status: "False" };
+
+    axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/createorder', trxnDetailX)
     .then(response => {
-        console.log("=================Company X success begin===================");
-        // console.log(response);
 
-        if(response.status === 200 && response.data === "Success") {
-          console.log("yes, its successful!");
+        if(response.data == "Success") {
+            console.log("X successful with phase 1");
+            axios.post('https://zl1tn7nsl8.execute-api.us-east-1.amazonaws.com/api541/updateorders', trxnDetailY)
+            .then(response => {
 
-          axios.post('https://zl1tn7nsl8.execute-api.us-east-1.amazonaws.com/api541/updateorders', trxnDetail)
-          .then(response => {
-            console.log("=================Company Y success begin===================");
-            console.log(response);
-            console.log("=================Company Y success end===================");
-          })
-          .catch(error => {
-            console.log("=================Company Y failed begin===================");
-            console.log(error);
-            console.log("=================Company Y failed end===================");
-          });
+                if(response.data == 200) {
+                    console.log("Y successful with phase 1");
+                    axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/commitorder', phase2successX)
+                    .then(response => {
+                        
+                        if(response.data == "Success") {
+                            console.log("X successful with phase 2");
+                            axios.post('https://35dz539u31.execute-api.us-east-1.amazonaws.com/api541/commitorders', phase2successY)
+                            .then(response => {
+
+                                if(response.data == 0) {
+                                    console.log("Y successful with phase 2");
+                                    
+                                    //write to our db
+                                    let datetime = new Date().toISOString();
+                                    postData.tableData.forEach(element => {
+                                      partOrders.push({
+                                        packageName: postData.packageId,
+                                        userId: username,
+                                        itemId: element.partId,
+                                        qty: parseInt(element.qty),
+                                        date: datetime.slice(0,10),
+                                        time: datetime.slice(11,19),
+                                        result: true
+                                      });
+                                    });
+                                    let orders = Orders.createEach(partOrders).fetch().intercept((err) => {
+                                      err.message = 'Uh oh: '+err.message;
+                                      return res.status(400).send(err.message);
+                                    });
+
+                                    console.log("order rows pushed: " + orders.length);
+
+                                    return res.view('pages/order', {
+                                      result: 'success',
+                                      message: 'Order Placed Successfully!'
+                                    });
+                                }
+                                else {
+                                    // Y failed with phase 2
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            });
+                        }
+
+                        else {
+                          console.log("X failed during phase 2");
+                          axios.post('https://35dz539u31.execute-api.us-east-1.amazonaws.com/api541/commitorders', phase2failureY)
+                            .then(response => {
+                              console.log("Y rollback response");
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        res.view('pages/order', {
+                          result: 'failure',
+                          message: 'An error occurred while sending order details to Package management company'
+                        });
+                    });
+                }
+
+                else if(response.data == 404) {
+                    console.log("Y failed during phase 1 due to insufficient quantities");
+                    axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/commitorder', phase2failureX)
+                    .then(response => {
+                        console.log("X rollback successful");
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+                    axios.post('https://35dz539u31.execute-api.us-east-1.amazonaws.com/api541/commitorders', phase2failureY)
+                    .then(response => {
+                        console.log("Y rollback successful");
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+                    return res.view('pages/order', {
+                      result: 'failure',
+                      message: 'Could not place order due to insufficient quantities in the inventory'
+                    });
+                }
+
+            })
+            .catch(error => {
+                console.log(error);
+                res.view('pages/order', {
+                  result: 'failure',
+                  message: 'An error occurred while sending order details to Inventory management company'
+                });
+            });
         }
 
-        
-        console.log("=================Company X success end===================");
+        else if(response.data == null) {
+          console.log("X failed during phase 1");
+          axios.post('https://s7wobsx2wf.execute-api.us-east-1.amazonaws.com/Dev/commitorder', phase2failureX)
+          .then(response => {
+              console.log("X rollback successful");
+          })
+          .catch(error => {
+              console.log(error);
+          });
+        }
     })
     .catch(error => {
-        console.log("=================Company X failed begin===================");
         console.log(error);
-        console.log("=================Company X failed end===================");
+        return res.view('pages/order', {
+          result: 'failure',
+          message: 'An error occurred while sending order details to Package management company'
+        });
     });
-    res.send("Hello");
+
+    res.view('pages/order', {
+      result: 'failure',
+      message: 'An error has occurred'
+    });
+    // res.send("Hello");
+
+    // axios.post('https://35dz539u31.execute-api.us-east-1.amazonaws.com/api541/commitorders', phase2successY)
+    // .then(response => {
+
+    // })
+    // .catch(error => {
+
+    // });
 
     //let orderSuccess = postData.tableData.every(element => parseInt(element.qoh) >= parseInt(element.qty));
 
