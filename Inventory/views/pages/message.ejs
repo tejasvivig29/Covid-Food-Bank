@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
+
+    <div class="container" style="text-align: center;">
+      <ol class="breadcrumb">
+        <a href="/items"
+          ><li class="breadcrumb-item" style="cursor: pointer;">
+            ⇦ Go to Items
+          </li></a
+        >
+      </ol>
+      <h1 class="display-4" style="color: red;"><%= message %></h1>
+    </div>
+
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include ('../templates/foot')
+      -%>
+    </footer>
+  </body>
+</html>

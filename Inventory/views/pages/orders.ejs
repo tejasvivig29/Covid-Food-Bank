@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
+
+    <div class="container">
+      <h1 class="display-4">Orders</h1>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Package ID</th>
+            <th>User ID</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i = 0; i < orders.length; i++) { %>
+          <tr>
+            <td><%= orders[i].orderId %></td>
+            <td><%= orders[i].packageId %></td>
+            <td><%= orders[i].userId %></td>
+            <td><%= orders[i].itemName %></td>
+            <td><%= orders[i].qty %></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include ('../templates/foot')
+      -%>
+    </footer>
+  </body>
+</html>

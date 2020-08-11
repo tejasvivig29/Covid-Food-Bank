@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include ('../templates/header') -%>
+  </head>
+
+  <body>
+    <header>
+      <%- include ('../templates/nav') -%>
+    </header>
+    <div class="container">
+      <div class="jumbotron" style="text-align: center; margin-top: 15%;">
+        <h1 class="display-4">WAR against COVID</h1>
+        <p class="lead">
+          This is the inventory to provide the necessary help to the people
+          around.
+        </p>
+        <hr />
+        <hr />
+        <a href="/items" class="btn-lg btn-primary">View Items</a>
+        <a href="/addItem" class="btn-lg btn-primary">Add an Item</a>
+        <a href="/searchitem" class="btn-lg btn-primary">Search Item</a>
+        <a href="/searchorder" class="btn-lg btn-primary">Search Order</a>
+        <!-- <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a> -->
+      </div>
+    </div>
+    <!-- <div class="container" style="text-align: center;">
+      <h1 class="display-4">Welcome to COVID Inventory</h1>
+      <a href="/items" class="btn btn-primary">View Items</a>
+      <a href="/addpart" class="btn btn-primary">Add Part</a>
+      <a href="/searchitem" class="btn btn-primary">Search Item</a>
+      <a href="/searchorder" class="btn btn-primary">Search Order</a>
+    </div> -->
+
+    <footer>
+      <%- include ('../templates/footer') -%> <%- include
+      ('../templates/foot')-%>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<script type="text/javascript" src="/js/dependencies/sails.io.js"></script>
+<script type="text/javascript">
+
+    function createData() {
+        console.log("In create data");
+        let tableData = new Array();
+        $('.table tr').each(function (row, tr){
+            tableData[row] = {
+                "itemId": $(tr).find('td:eq(0)').text(),
+                "qty": $(tr).find('td:eq(1)').text(),
+                //"qoh": $(tr).find('input:hidden').val(),
+            }
+        });
+        tableData.shift();
+        //console.log(tableData);
+
+        let dataToPass = {packageId: $('#package-name').text(), tableData: tableData};
+        console.log(dataToPass);
+        $('#table-data').val(JSON.stringify(dataToPass));
+    }
+    
+</script>
+
+<h1 class="display-4" id="package-name"><%= packageId %></h1>
+<div class="msg-alert"></div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for(let i = 0; i < items.length; i++) { %>
+            <tr>
+                <td><%= items[i].itemId %></td>
+                <td><%= items[i].qty %></td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>
+<form method="post" id="myForm" action="/jobs/validateOrder" onsubmit="createData();">
+  <div class="form-group">
+    <input type="hidden" class="form-control" name="parts" id="table-data">
+  </div>
+  <button type="submit" class="btn btn-primary" >Place Order</button>
+</form>
